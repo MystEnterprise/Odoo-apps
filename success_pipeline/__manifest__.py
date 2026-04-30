@@ -42,4 +42,9 @@ Key Features
     'category': 'Sales/CRM',
     'price': 149.00,
     'currency': 'USD',
+    'website': 'https://www.mystenterprise.com',
+    'author': 'Myst Enterprise',
+    'category': 'Sales/CRM',
+    'price': 149.00,
+    'currency': 'USD',
 }
