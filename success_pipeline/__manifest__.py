@@ -16,9 +16,12 @@ Key Features
 * Non-negotiables tracker for team discipline
 * Export-ready data for supplier and customer analysis
     """,
-    'author': 'Success Pipeline',
+    'author': 'Myst Enterprise',
     'website': 'https://www.mystenterprise.com',
     'category': 'Sales/CRM',
+    'price': 149.00,
+    'currency': 'USD',
+    'license': 'OPL-1',
     'depends': ['base', 'mail', 'board'],
     'data': [
         'security/ir.model.access.csv',
@@ -34,17 +37,4 @@ Key Features
     'installable': True,
     'application': True,
     'auto_install': False,
-    'license': 'OPL-1',
-    'price': 149.00,
-    'currency': 'USD',
-    'website': 'https://www.mystenterprise.com',
-    'author': 'Myst Enterprise',
-    'category': 'Sales/CRM',
-    'price': 149.00,
-    'currency': 'USD',
-    'website': 'https://www.mystenterprise.com',
-    'author': 'Myst Enterprise',
-    'category': 'Sales/CRM',
-    'price': 149.00,
-    'currency': 'USD',
 }
