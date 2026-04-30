@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ── Kanban ── -->
+  <record id="success_lead_view_kanban" model="ir.ui.view">
+    <field name="name">success.lead.kanban</field>
+    <field name="model">success.lead</field>
+    <field name="arch" type="xml">
+      <kanban default_group_by="stage" class="o_kanban_small_column">
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="stage"/>
+        <field name="deal_value"/>
+        <field name="cso_deadline"/>
+        <field name="product_type"/>
+        <field name="product_category"/>
+        <field name="priority"/>
+        <field name="color"/>
+        <field name="stage_date"/>
+        <field name="date_created"/>
+        <field name='record_type'/>
+        <field name='innovation_stage'/>
+        <field name='pain_point_severity'/>
+        <field name='unique_value_prop'/>
+        <field name='target_customer_desc'/>
+        <field name='innovation_budget'/>
+        <field name='problem_statement'/>
+        <field name='mvp_deadline'/>
+        <field name='currency_id'/>
+        <templates>
+          <t t-name='card'>
+  <div class='p-2'>
+    <t t-if='record.record_type.raw_value === "innovation"'>
+      <strong><field name='name'/></strong>
+      <div class='mt-1'>
+        <span class='badge bg-secondary' style='max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;'><field name='problem_statement'/></span>
+        <span class='badge bg-light text-dark ms-1' style='border:1px solid #ced4da;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;'><field name='target_customer_desc'/></span>
+      </div>
+      <div class='mt-1 d-flex justify-content-between align-items-center'>
+        <span class='text-muted small'>Budget: <field name='innovation_budget' widget='monetary'/></span>
+        <span class='text-muted small' t-if="record.innovation_stage.raw_value in ['prototype','scale','launch','validation','established']">MVP by: <field name='mvp_deadline'/></span>
+      </div>
+      <div class='mt-1'><field name='pain_point_severity' widget='priority'/></div>
+    </t>
+    <t t-else=''>
+      <strong><field name='name'/></strong>
+      <div class='text-muted small'><field name='partner_id'/></div>
+      <div class='mt-1'>
+        <span class='badge bg-secondary'><field name='product_category'/></span>
+        <span class='badge bg-light text-dark ms-1'><field name='product_type'/></span>
+      </div>
+      <div class='mt-1 d-flex justify-content-between align-items-center'>
+        <span class='text-muted small'>Value: <field name='deal_value' widget='monetary'/></span>
+        <span class='text-muted small'>DL by: <field name='cso_deadline'/></span>
+      </div>
+      <div class='mt-1'><field name='priority' widget='priority'/></div>
+    </t>
+  </div>
+</t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+  <!-- ── Game Changer Kanban ── -->
+  <record id="success_gc_view_kanban" model="ir.ui.view">
+    <field name="name">success.lead.gc.kanban</field>
+    <field name="model">success.lead</field>
+    <field name="arch" type="xml">
+      <kanban default_group_by="innovation_stage">
+        <field name="name"/>
+        <field name="target_customer_desc"/>
+        <field name="unique_value_prop"/>
+        <field name="pain_point_severity"/>
+        <field name="innovation_stage"/>
+        <field name="innovation_budget"/>
+        <field name="problem_statement"/>
+        <field name="mvp_deadline"/>
+        <field name="currency_id"/>
+        <field name="color"/>
+        <templates>
+          <t t-name="card">
+            <div class="p-2">
+              <strong><field name="name"/></strong>
+              <div class="mt-1">
+                <span class="badge bg-secondary" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"><field name="problem_statement"/></span>
+                <span class="badge bg-light text-dark ms-1" style="border:1px solid #ced4da;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;"><field name="target_customer_desc"/></span>
+              </div>
+              <div class="mt-1 d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Budget: <field name="innovation_budget" widget="monetary"/></span>
+                <span class="text-muted small" t-if="record.innovation_stage.raw_value in ['prototype','scale','launch','validation','established']">MVP by: <field name="mvp_deadline"/></span>
+              </div>
+              <div class="mt-1"><field name="pain_point_severity" widget="priority"/></div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+
+
+  <!-- ── List ── -->
+  <record id="success_lead_view_list" model="ir.ui.view">
+    <field name="name">success.lead.list</field>
+    <field name="model">success.lead</field>
+    <field name="arch" type="xml">
+      <list string="Success Pipeline" decoration-success="stage=='closed_won'"
+            decoration-danger="stage=='closed_lost'"
+            decoration-warning="stage=='md_approval'">
+        <field name="priority" widget="priority"/>
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="product_category"/>
+        <field name="stage"/>
+        <field name="deal_value" widget="monetary"/>
+        <field name="budget" widget="monetary"/>
+        <field name="cso_deadline"/>
+        <field name="date_created"/>
+        <field name="has_two_options" widget="boolean_toggle"/>
+        <field name="sourcing_on_time" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- ── Form ── -->
+  <record id="success_lead_view_form" model="ir.ui.view">
+    <field name="name">success.lead.form</field>
+    <field name="model">success.lead</field>
+    <field name="arch" type="xml">
+      <form string="Success Lead">
+        <header>
+          <button name="action_send_brief" string="Send Brief to Delivery Lead" type="object"
+                  class="btn-primary"
+                  invisible="record_type == 'innovation' or brief_sent_flag or stage not in ['lead_in','cso_confirmed']"/>
+          <button name="action_reset_brief" string="Reset Brief" type="object"
+                  invisible="not brief_sent_flag"/>
+          <button name="action_confirm_brief" string="Confirm Brief ✓" type="object"
+                  class="btn-primary"
+                  invisible="brief_confirmed_flag or ball_with != 'delivery'"/>
+          <button name="action_reset_confirmation" string="Reset Confirmation" type="object"
+                  invisible="not brief_confirmed_flag"/>
+          <button name="action_start_sourcing" string="Start Sourcing" type="object"
+                  class="btn-primary" invisible="stage not in ['delivery_lead_confirmed','cso_confirmed']"/>
+          <button name="action_send_to_md" string="Send to 3P Approval" type="object"
+                  class="btn-primary" invisible="record_type == 'innovation' or stage != 'sourcing'"/>
+          <button name="action_close_won" string="Close — Won" type="object"
+                  class="btn-primary" invisible="record_type == 'innovation' or stage != 'md_approval'"/>
+          <button name="action_close_lost" string="Lost" type="object"
+                  class="btn-danger" invisible="record_type == 'innovation' or stage in ['closed_won','closed_lost']"/>
+          <button name='action_advance_innovation' string='Next Stage' type='object' class='btn-primary' invisible='record_type != "innovation" or innovation_stage in ["established","killed"]'/>
+          <button name='action_kill_innovation' string='Kill' type='object' class='btn-danger' invisible='record_type != "innovation" or innovation_stage in ["established","killed"]'/>
+          <field name="stage" widget="statusbar"
+                 statusbar_visible="lead_in,delivery_lead_confirmed,cso_confirmed,sourcing,md_approval,closed_won"
+                 invisible="record_type == 'innovation'"/>
+          <field name="innovation_stage" widget="statusbar"
+                 invisible="record_type != 'innovation'"/>
+        </header>
+        <sheet>
+          <!-- Stage / ball banners -->
+          <div invisible="record_type == 'innovation' or stage != 'closed_won'"
+               style="background:#155724;color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;font-weight:700;font-size:15px;text-align:center;letter-spacing:0.3px;">
+            &#127942; WE DID IT! Revenue secured. Champions. &#127881;
+          </div>
+          <div invisible="stage != 'md_approval'"
+               style="background:#4B0082;color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;font-weight:700;font-size:15px;text-align:center;letter-spacing:0.3px;">
+            &#129309; All hands on the Ball — We're gonna hit it Insha'Allah
+          </div>
+          <div invisible="stage != 'sourcing'"
+               style="background:#B22222;color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;font-weight:700;font-size:15px;text-align:center;letter-spacing:0.3px;">
+            &#128293; Cooking now...
+          </div>
+          <div invisible="record_type == 'innovation' or ball_with == 'growth' or stage in ['sourcing','md_approval','closed_won','closed_lost']"
+               style="background:#BA7517;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-weight:600;">
+            &#128233; Ball with Delivery Lead
+          </div>
+          <div invisible="record_type == 'innovation' or ball_with != 'growth' or brief_confirmed_flag or stage in ['sourcing','md_approval','closed_won','closed_lost']"
+               style="background:#0F6E56;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-weight:600;">
+            &#127919; Ball in Growth Lead's Court
+          </div>
+          <div invisible="record_type == 'innovation' or ball_with != 'growth' or not brief_confirmed_flag or stage in ['sourcing','md_approval','closed_won','closed_lost']"
+               style="background:#0F6E56;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-weight:600;">
+            &#9989; Ball is back with Growth Lead
+          </div>
+          <div class="oe_title">
+            <div class="d-flex align-items-center gap-2">
+              <field name="priority" widget="priority" invisible="record_type == 'innovation'"/>
+              <h1><field name="name" placeholder="Deal Name"/></h1>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <span class="text-muted small fw-bold">Type:</span>
+              <field name="record_type" widget="radio" class="d-flex gap-3"/>
+            </div>
+          </div>
+
+          <!-- ══ OUTCOME — visible when closed ══ -->
+          <group string="Outcome"
+                 invisible="stage not in ['closed_won','closed_lost']">
+            <group>
+              <field name="deal_value" widget="monetary"/>
+              <field name="currency_id" invisible="1"/>
+              <field name="date_closed"/>
+            </group>
+            <field name="outcome_notes" nolabel="1" colspan="2"
+                   string="Stage Notes"
+                   placeholder="Closed — why won / lost? Key lessons?" style="min-height:90px;"/>
+            <field name="supplier_rating" invisible="stage != 'closed_won'"/>
+            <field name="lost_reason" nolabel="1" colspan="2"
+                   string="Lost Reason"
+                   placeholder="Specific reason lost..."
+                   invisible="stage != 'closed_lost'" style="min-height:60px;"/>
+          </group>
+
+          <!-- ══ 3P APPROVAL — visible from md_approval onwards ══ -->
+          <group string="3P Approval"
+                 invisible="stage not in ['md_approval','closed_won','closed_lost']">
+            <group>
+              <field name="margin_approved"/>
+              <field name="approved_eta"/>
+            </group>
+            <field name="md_notes" nolabel="1" colspan="2"
+                   string="Stage Notes"
+                   placeholder="3P Approval — conditions, margin rationale, director decisions?" style="min-height:90px;"/>
+          </group>
+
+          <!-- ══ SOURCING — visible from sourcing stage onwards ══ -->
+          <div invisible="stage not in ['sourcing','md_approval','closed_won','closed_lost']"
+               style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;">
+            <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Sourcing Information —</span>
+          </div>
+          <group string="Sourcing"
+                 invisible="stage not in ['sourcing','md_approval','closed_won','closed_lost']">
+            <!-- Option A -->
+            <group>
+              <div invisible="primary_option != 'a'"
+                   style="background:#d4edda;color:#155724;padding:4px 12px;border-radius:6px;font-weight:700;font-size:12px;margin-bottom:4px;">
+                &#9989; Primary Choice
+              </div>
+              <field name="supplier_a_id" context="{'default_supplier_rank': 1}" string="Option A — Supplier"/>
+              <field name="supplier_a_details" placeholder="Price, MOQ, lead time..." string="Details"/>
+            </group>
+            <!-- Option B -->
+            <group>
+              <div invisible="primary_option != 'b'"
+                   style="background:#d4edda;color:#155724;padding:4px 12px;border-radius:6px;font-weight:700;font-size:12px;margin-bottom:4px;">
+                &#9989; Primary Choice
+              </div>
+              <field name="supplier_b_id" context="{'default_supplier_rank': 1}" string="Option B — Supplier"/>
+              <field name="supplier_b_details" placeholder="Price, MOQ, lead time..." string="Details"/>
+            </group>
+            <!-- Sourcing metadata -->
+            <group colspan="2">
+              <group>
+                <field name="primary_option" widget="selection"/>
+                <field name="sourcing_eta"/>
+                <field name="supplier_lead_time" placeholder="e.g. 4 weeks"/>
+              </group>
+              <group>
+                <field name="has_two_options" widget="boolean_toggle"/>
+                <field name="sourcing_on_time" widget="boolean_toggle"/>
+              </group>
+            </group>
+            <field name="note_sourcing" nolabel="1" colspan="2"
+                   string="Stage Notes"
+                   placeholder="Sourcing — supplier context, risks, decisions?" style="min-height:90px;"/>
+          </group>
+
+          <!-- ══ INNOVATION SECTION ══ -->
+          <div invisible='record_type != "innovation"'>
+            <group string='Established' invisible='innovation_stage != "established"'>
+                <field name='monthly_revenue'/>
+                <field name='reorder_frequency'/>
+                <field name='product_rating'/>
+                <field name='expansion_markets'/>
+                <field name='established_notes'/>
+                <field name='whatsapp_log_established' nolabel='1' colspan='2' placeholder='WhatsApp thread for Established stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage != "established"'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Market Validation —</span>
+            </div>
+            <group string='Market Validation' invisible='innovation_stage not in ["validation","established"]'>
+                <field name='units_sold'/>
+                <field name='customer_feedback_score'/>
+                <field name='return_rate'/>
+                <field name='nps_score'/>
+                <field name='validation_notes'/>
+                <field name='whatsapp_log_validation' nolabel='1' colspan='2' placeholder='WhatsApp thread for Market Validation stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage not in ["validation","established"]'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Launch —</span>
+            </div>
+            <group string='Launch' invisible='innovation_stage not in ["launch","validation","established"]'>
+                <field name='launch_date'/>
+                <field name='launch_market'/>
+                <field name='launch_marketing_channel'/>
+                <field name='launch_budget'/>
+                <field name='launch_notes'/>
+                <field name='create_product'/>
+                <field name='new_product_name' invisible='not create_product'/>
+                <field name='new_product_description' invisible='not create_product'/>
+                <field name='product_id' readonly='1'/>
+                <button name='action_create_product_from_lead' string='Create &amp; Open Product' type='object' class='btn-primary' invisible='not create_product or product_id'/>
+                <field name='whatsapp_log_launch' nolabel='1' colspan='2' placeholder='WhatsApp thread for Launch stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage not in ["launch","validation","established"]'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Scale —</span>
+            </div>
+            <group string='Scale' invisible='innovation_stage not in ["scale","launch","validation","established"]'>
+                <field name='production_volume_target'/>
+                <field name='unit_economics'/>
+                <field name='breakeven_units'/>
+                <field name='supplier_confirmed_innovation'/>
+                <field name='marketing_channels'/>
+                <field name='scale_notes'/>
+                <field name='whatsapp_log_scale' nolabel='1' colspan='2' placeholder='WhatsApp thread for Scale stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage not in ["scale","launch","validation","established"]'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Prototype / MVP —</span>
+            </div>
+            <group string='Prototype / MVP' invisible='innovation_stage not in ["prototype","scale","launch","validation","established"]'>
+                <field name='prototype_cost'/>
+                <field name='testing_method'/>
+                <field name='feedback_summary'/>
+                <field name='iteration_notes'/>
+                <field name='mvp_deadline'/>
+                <field name='prototype_notes'/>
+                <field name='whatsapp_log_prototype' nolabel='1' colspan='2' placeholder='WhatsApp thread for Prototype/MVP stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage not in ["prototype","scale","launch","validation","established"]'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Sourcing —</span>
+            </div>
+            <group string='Sourcing' invisible='innovation_stage not in ["sourcing","prototype","scale","launch","validation","established"]'>
+                <field name='supplier_a_id'/>
+                <field name='supplier_a_details'/>
+                <field name='supplier_b_id'/>
+                <field name='supplier_b_details'/>
+                <field name='primary_option'/>
+                <field name='ip_patent_check'/>
+                <field name='ip_notes'/>
+                <field name='sourcing_notes_inno'/>
+                <field name='whatsapp_log_sourcing' nolabel='1' colspan='2' placeholder='WhatsApp thread for Sourcing stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage not in ["sourcing","prototype","scale","launch","validation","established","killed"]'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Feasibility —</span>
+            </div>
+            <group string='Feasibility' invisible='innovation_stage not in ["feasibility","sourcing","prototype","scale","launch","validation","established","killed"]'>
+                <field name='market_size_estimate'/>
+                <field name='competitor_analysis'/>
+                <field name='technical_feasibility'/>
+                <field name='dev_cost_estimate'/>
+                <field name='go_no_go'/>
+                <field name='go_no_go_date'/>
+                <field name='feasibility_notes'/>
+                <field name='whatsapp_log_feasibility' nolabel='1' colspan='2' placeholder='WhatsApp thread for Feasibility stage...' style='min-height:90px;'/>
+            </group>
+
+            <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;"
+                 invisible='innovation_stage not in ["feasibility","sourcing","prototype","scale","launch","validation","established","killed"]'>
+              <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Ideation —</span>
+            </div>
+            <group string='Ideation' invisible='innovation_stage not in ["ideation","feasibility","sourcing","prototype","scale","launch","validation","established","killed"]'>
+                <field name='problem_statement'/>
+                <field name='target_customer_desc'/>
+                <field name='pain_point_severity'/>
+                <field name='unique_value_prop'/>
+                <field name='inspiration_source'/>
+                <field name='innovation_budget'/>
+                <field name='ideation_notes'/>
+                <field name='whatsapp_log_ideation' nolabel='1' colspan='2' placeholder='WhatsApp thread for Ideation stage...' style='min-height:90px;'/>
+            </group>
+
+          </div>
+
+          <!-- ══ Lead Information divider ══ -->
+          <div style="border-top:2px solid #e0e0e8;margin:16px 0;text-align:center;" invisible="record_type == 'innovation'">
+            <span style="background:#fff;padding:0 12px;color:#888;font-size:12px;">— Lead Information —</span>
+          </div>
+
+          <!-- ══ LEAD INFO — always visible ══ -->
+          <group invisible="record_type == 'innovation'">
+            <group string="Customer">
+              <field name="partner_id" required="record_type == 'inquiry'"/>
+              <field name="product_type"/>
+              <field name="product_category"/>
+              <field name="lead_source"/>
+              <field name="priority" widget="selection"/>
+            </group>
+            <group string="Brief">
+              <field name="what_they_need" placeholder="What does the customer need?"/>
+              <field name="qty"/>
+              <field name="budget" widget="monetary"/>
+              <field name="cso_deadline" string="Delivery Lead Deadline"/>
+              <field name="date_created"/>
+            </group>
+          </group>
+
+          <!-- ══ LEAD COMMENTS — always visible ══ -->
+          <group string="Lead Comments" invisible="record_type == 'innovation'">
+            <field name="note_lead_in" nolabel="1" colspan="2"
+                   placeholder="Add a comment..." style="min-height:90px;"/>
+          </group>
+          <!-- ══ DELIVERY LEAD COMMENTS — appears after Send Brief ══ -->
+          <group string="Delivery Lead Comments" invisible="not brief_sent_flag">
+            <field name="note_delivery_confirmed" nolabel="1" colspan="2"
+                   placeholder="Add a comment..." style="min-height:90px;"/>
+          </group>
+
+          <!-- ══ WHATSAPP / WECHAT LOG ══ -->
+          <group string='WhatsApp / WeChat Log' invisible="record_type == 'innovation'">
+            <field name='whatsapp_log' placeholder='Paste last WhatsApp or WeChat message thread here...' nolabel='1' colspan='2' style='min-height:120px;'/>
+          </group>
+
+          <!-- ══ NOTIFICATION EMAILS ══ -->
+          <group string="Notification Emails" invisible="record_type == 'innovation'">
+            <group>
+              <field name="notification_email_growth" string="Growth Lead Email"/>
+            </group>
+            <group>
+              <field name="notification_email_delivery" string="Delivery Lead Email"/>
+            </group>
+          </group>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <!-- ── Search ── -->
+  <record id="success_lead_view_search" model="ir.ui.view">
+    <field name="name">success.lead.search</field>
+    <field name="model">success.lead</field>
+    <field name="arch" type="xml">
+      <search string="Search Leads">
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="user_id"/>
+        <field name="cso_id"/>
+        <filter name="my_leads" string="My Leads" domain="[('user_id','=',uid)]"/>
+        <filter name="lead_in" string="Lead In" domain="[('stage','=','lead_in')]"/>
+        <filter name="cso_confirmed" string="Source Lead Confirmed" domain="[('stage','=','cso_confirmed')]"/>
+        <filter name="sourcing" string="Sourcing" domain="[('stage','=','sourcing')]"/>
+        <filter name="md_approval" string="3P Approval" domain="[('stage','=','md_approval')]"/>
+        <filter name="closed_won" string="Won" domain="[('stage','=','closed_won')]"/>
+        <filter name="closed_lost" string="Lost" domain="[('stage','=','closed_lost')]"/>
+        <separator/>
+        <filter name="this_month" string="This Month" domain="[('date_created','&gt;=', (context_today()).strftime('%Y-%m-01'))]"/>
+        <filter name="this_year" string="This Year" domain="[('date_created','&gt;=', context_today().strftime('%Y-01-01'))]"/>
+        <separator/>
+        <filter name="stalled" string="Stalled 7d+" domain="[('stage','not in',['closed_won','closed_lost']),('stage_date','!=',False)]"/>
+        <filter name="high_priority" string="High Priority" domain="[('priority','=','2')]"/>
+        <separator/>
+        <filter name='leads_only' string='Leads' domain="[('record_type','=','inquiry')]"/>
+        <filter name='game_changers' string='Game-Changers' domain="[('record_type','=','innovation')]"/>
+        <filter name='has_product' string='Has Linked Product' domain="[('product_id','!=',False)]"/>
+        <filter name='go_decisions' string='Go Decisions' domain="[('go_no_go','=','yes')]"/>
+        <filter name='killed' string='Killed' domain="[('innovation_stage','=','killed')]"/>
+        <filter name='launched' string='Launched' domain="[('innovation_stage','in',['launch','validation','established'])]"/>
+        <group>
+          <filter name="group_stage" string="Stage" context="{'group_by':'stage'}"/>
+          <filter name="group_category" string="Category" context="{'group_by':'product_category'}"/>
+          <filter name="group_source" string="Lead Source" context="{'group_by':'lead_source'}"/>
+          <filter name="group_type" string="Product Type" context="{'group_by':'product_type'}"/>
+          <filter name="group_month" string="Month" context="{'group_by':'date_created:month'}"/>
+          <filter name='group_record_type' string='Type' context="{'group_by':'record_type'}"/>
+          <filter name='group_innovation_stage' string='Innovation Stage' context="{'group_by':'innovation_stage'}"/>
+          <filter name='group_product' string='Product' context="{'group_by':'product_id'}"/>
+          <filter name='group_launch_market' string='Launch Market' context="{'group_by':'launch_market'}"/>
+          <filter name='group_supplier_a' string='Primary Supplier' context="{'group_by':'supplier_a_id'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <!-- ── Action + Menus ── -->
+  <record id="action_success_lead" model="ir.actions.act_window">
+    <field name="name">Success Pipeline</field>
+    <field name="res_model">success.lead</field>
+    <field name="view_mode">kanban,list,form</field>
+    <field name="view_id" ref="success_lead_view_kanban"/>
+    <field name="context">{"group_by": "record_type"}</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        No leads yet — add your first opportunity!
+      </p>
+    </field>
+  </record>
+
+  <record id="action_success_leads" model="ir.actions.act_window">
+    <field name="name">Leads</field>
+    <field name="res_model">success.lead</field>
+    <field name="view_mode">kanban,list,form</field>
+    <field name="domain">[("record_type","=","inquiry")]</field>
+    <field name="context">{"default_record_type":"inquiry","search_default_leads_only":1}</field>
+    <field name="view_id" ref="success_lead_view_kanban"/>
+  </record>
+
+  <record id="action_success_game_changers" model="ir.actions.act_window">
+    <field name="name">Game Changers</field>
+    <field name="res_model">success.lead</field>
+    <field name="view_mode">kanban,list,form</field>
+    <field name="domain">[("record_type","=","innovation")]</field>
+    <field name="context">{"default_record_type":"innovation","search_default_game_changers":1}</field>
+    <field name="view_ids" eval="[(5,0,0),(0,0,{&quot;view_mode&quot;:&quot;kanban&quot;,&quot;view_id&quot;:ref(&quot;success_gc_view_kanban&quot;)}),(0,0,{&quot;view_mode&quot;:&quot;list&quot;}),(0,0,{&quot;view_mode&quot;:&quot;form&quot;})]" />
+  </record>
+
+  <menuitem id="menu_success_pipeline"
+            name="Pipeline"
+            parent="menu_success_root"
+            action="action_success_lead"
+            sequence="1"/>
+  <menuitem id="menu_success_leads" name="Leads" parent="menu_success_root" action="action_success_leads" sequence="2"/>
+  <menuitem id="menu_success_game_changers" name="Game Changers" parent="menu_success_root" action="action_success_game_changers" sequence="3"/>
+
+</odoo>

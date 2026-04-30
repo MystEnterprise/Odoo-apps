@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="success_pipeline_stats_view_form" model="ir.ui.view">
+    <field name="name">success.pipeline.stats.dashboard</field>
+    <field name="model">success.pipeline.stats</field>
+    <field name="arch" type="xml">
+      <form string="Success Pipeline Dashboard" create="false" delete="false">
+        <sheet>
+
+          <!-- bar_pct computed fields — fetched for t-attf-style use -->
+          <field name="leads_bar_pct" invisible="1"/>
+          <field name="brief_quality_bar_pct" invisible="1"/>
+          <field name="outcome_posted_bar_pct" invisible="1"/>
+          <field name="conversion_bar_pct" invisible="1"/>
+          <field name="qoq_bar_pct" invisible="1"/>
+          <field name="cso_response_bar_pct" invisible="1"/>
+          <field name="sourcing_on_time_bar_pct" invisible="1"/>
+          <field name="two_options_bar_pct" invisible="1"/>
+          <field name="sourcing_conversion_bar_pct" invisible="1"/>
+          <field name="avg_sourcing_bar_pct" invisible="1"/>
+
+          <!-- ── Filter Bar ── -->
+          <div class="d-flex align-items-center gap-3 flex-wrap p-3 mb-3 rounded"
+               style="background:#f0f4ff; border: 1px solid #d0d9f0;">
+            <span class="small fw-bold text-muted text-uppercase" style="letter-spacing:0.06em;">Filter:</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted">Period</span>
+              <div style="background:#f0f4ff;border:1px solid #c0d0f0;border-radius:20px;padding:4px 12px;font-weight:500;display:inline-block;">
+                <field name="filter_period" widget="selection" class="small" style="min-width:130px;border:none;background:transparent;"/>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted">Category</span>
+              <div style="background:#f0f4ff;border:1px solid #c0d0f0;border-radius:20px;padding:4px 12px;font-weight:500;display:inline-block;">
+                <field name="filter_product_category" widget="selection" class="small" style="min-width:160px;border:none;background:transparent;"/>
+              </div>
+            </div>
+            <span class="small text-muted ms-2" style="font-style:italic;">KPIs recalculate automatically</span>
+          </div>
+
+          <!-- ── Hero Header ── -->
+          <div style="background: linear-gradient(135deg, #0f1e3c 0%, #1a3a6b 60%, #0d2d5e 100%);
+                      border-radius: 12px; padding: 28px 32px; margin-bottom: 16px; color: #fff;">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 700; letter-spacing: 0.03em;">
+                  Success Pipeline Dashboard
+                </div>
+                <div style="font-size: 0.85rem; opacity: 0.65; margin-top: 2px;">
+                  Live metrics — sourcing pipeline
+                </div>
+              </div>
+              <div style='display:flex;gap:28px;margin-top:14px;flex-wrap:wrap;'>
+  <div>
+    <div style='font-size:0.65rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.05em;'>Active Leads</div>
+    <div style='font-size:1.6rem;font-weight:700;'><field name='active_leads' readonly='1' nolabel='1'/></div>
+  </div>
+  <div>
+    <div style='font-size:0.65rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.05em;'>Deals Closed</div>
+    <div style='font-size:1.6rem;font-weight:700;'><field name='deals_closed' readonly='1' nolabel='1'/></div>
+  </div>
+  <div>
+    <div style='font-size:0.65rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.05em;'>Game Changers</div>
+    <div style='font-size:1.6rem;font-weight:700;'><field name='launched_game_changers' readonly='1' nolabel='1'/></div>
+  </div>
+  <div>
+    <div style='font-size:0.65rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.05em;'>Stalled 7D+</div>
+    <div style='font-size:1.6rem;font-weight:700;color:#ff6b6b;'><field name='stalled_leads' readonly='1' nolabel='1'/></div>
+  </div>
+</div>
+            </div>
+          </div>
+
+          <!-- ── Scoreboard ── -->
+          <div class="o_horizontal_separator mt-2 mb-2 fw-bold text-uppercase">Scoreboard</div>
+<div class='row g-2 mb-2'>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Leads This Month</div>
+    <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='leads_this_month' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>Target: 10+</div>
+    <span class='badge bg-danger' invisible='leads_status != "off_track"'>Off Track</span>
+    <span class='badge bg-warning text-dark' invisible='leads_status != "near_miss"'>Near Miss</span>
+    <span class='badge bg-success' invisible='leads_status != "on_track"'>On Track</span>
+  </div></div>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Briefs Sent</div>
+    <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='briefs_sent' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>Active in stage</div>
+  </div></div>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;border-left:4px solid #0F6E56;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#0F6E56;'>Deals Closed</div>
+    <div style='font-size:3rem;font-weight:800;margin:6px 0;color:#0F6E56;'><field name='deals_closed' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>Total won</div>
+  </div></div>
+</div>
+<div class='row g-2 mb-2'>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Sourcing In Progress</div>
+    <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='sourcing_count' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>Active in stage</div>
+  </div></div>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Active Leads</div>
+    <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='active_leads' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>Target: 10+</div>
+    <span class='badge bg-danger' invisible='active_leads_status != "off_track"'>Off Track</span>
+    <span class='badge bg-warning text-dark' invisible='active_leads_status != "near_miss"'>Near Miss</span>
+    <span class='badge bg-success' invisible='active_leads_status != "on_track"'>On Track</span>
+  </div></div>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;border-left:4px solid #534AB7;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#534AB7;'>Game Changers Launched</div>
+    <div style='font-size:3rem;font-weight:800;margin:6px 0;color:#534AB7;'><field name='launched_game_changers' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>In market or established</div>
+  </div></div>
+</div>
+<div class='row g-2 mb-4'>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Avg Days to Close</div>
+    <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='avg_days_to_close' readonly='1' digits='[5,1]'/><span style='font-size:0.9rem;color:#888;'> days</span></div>
+    <div style='font-size:0.75rem;color:#888;'>Closed won only</div>
+  </div></div>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Active Game-Changers</div>
+    <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='active_game_changers' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>In progress</div>
+  </div></div>
+  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;border-left:4px solid #dc3545;'>
+    <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#dc3545;'>Stalled 7D+</div>
+    <div style='font-size:3rem;font-weight:800;margin:6px 0;color:#dc3545;'><field name='stalled_leads' readonly='1'/></div>
+    <div style='font-size:0.75rem;color:#888;'>Target: 0</div>
+    <span class='badge bg-danger' invisible='stalled_status != "off_track"'>Off Track</span>
+    <span class='badge bg-warning text-dark' invisible='stalled_status != "near_miss"'>Near Miss</span>
+    <span class='badge bg-success' invisible='stalled_status != "on_track"'>On Track</span>
+  </div></div>
+</div>
+
+          <!-- ── KPI Targets ── -->
+          <div class="o_horizontal_separator mt-3 mb-2 fw-bold text-uppercase">KPI Targets</div>
+          <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+              <div class="card border shadow-sm">
+                <div class="card-header fw-bold bg-light">Growth Lead Targets</div>
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="table-light">
+                    <tr><th>KPI</th><th class="text-end">Actual</th><th class="text-end">Target</th><th>Status</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="small">Leads / Month</td>
+                      <td class="text-end fw-bold"><field name="leads_this_month" readonly="1"/></td>
+                      <td class="text-end text-muted small">10</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="leads_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="leads_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="leads_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="leads_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Brief Completion %</td>
+                      <td class="text-end fw-bold"><field name="brief_quality_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">80%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="brief_quality_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="brief_quality_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="brief_quality_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="brief_quality_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Outcome Posted %</td>
+                      <td class="text-end fw-bold"><field name="outcome_posted_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">100%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="outcome_posted_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="outcome_posted_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="outcome_posted_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="outcome_posted_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Conversion Rate %</td>
+                      <td class="text-end fw-bold"><field name="conversion_rate_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">30%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="conversion_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="conversion_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="conversion_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="conversion_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">QoQ Revenue Growth %</td>
+                      <td class="text-end fw-bold"><field name="qoq_revenue_growth_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">15%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="qoq_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="qoq_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="qoq_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="qoq_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="card border shadow-sm">
+                <div class="card-header fw-bold bg-light">Delivery Lead Targets</div>
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="table-light">
+                    <tr><th>KPI</th><th class="text-end">Actual</th><th class="text-end">Target</th><th>Status</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="small">24hr Response %</td>
+                      <td class="text-end fw-bold"><field name="cso_response_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">80%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="cso_response_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="cso_response_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="cso_response_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="cso_response_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Sourcing On Time %</td>
+                      <td class="text-end fw-bold"><field name="sourcing_on_time_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">90%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="sourcing_on_time_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="sourcing_on_time_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="sourcing_on_time_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="sourcing_on_time_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Two Options %</td>
+                      <td class="text-end fw-bold"><field name="two_options_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">100%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="two_options_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="two_options_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="two_options_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="two_options_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Sourcing Conversion %</td>
+                      <td class="text-end fw-bold"><field name="sourcing_conversion_pct" readonly="1" digits="[5,1]"/>%</td>
+                      <td class="text-end text-muted small">40%</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="sourcing_conversion_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="sourcing_conversion_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="sourcing_conversion_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="sourcing_conversion_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="small">Avg Days to Confirm</td>
+                      <td class="text-end fw-bold"><field name="avg_sourcing_days" readonly="1" digits="[5,1]"/>d</td>
+                      <td class="text-end text-muted small">&lt;2d</td>
+                      <td style="min-width:80px; padding:6px 4px;">
+                        <div invisible="avg_sourcing_days_status != 'on_track'">
+                          <div style="background:#28a745;border-radius:4px;height:8px;width:100%;"></div>
+                          <div style="font-size:0.72rem;color:#28a745;margin-top:3px;font-weight:600;">100%</div>
+                        </div>
+                        <div invisible="avg_sourcing_days_status != 'near_miss'">
+                          <div style="background:#ffc107;border-radius:4px;height:8px;width:65%;"></div>
+                          <div style="font-size:0.72rem;color:#856404;margin-top:3px;font-weight:600;">65%</div>
+                        </div>
+                        <div invisible="avg_sourcing_days_status != 'off_track'">
+                          <div style="background:#dc3545;border-radius:4px;height:8px;width:25%;"></div>
+                          <div style="font-size:0.72rem;color:#dc3545;margin-top:3px;font-weight:600;"><field name="avg_sourcing_bar_pct" readonly="1" nolabel="1"/>%</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── Non-Negotiables ── -->
+          <div class="o_horizontal_separator mt-4 mb-2 fw-bold text-uppercase">Non-Negotiables</div>
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="small fw-bold text-muted">Week of:</span>
+            <div style="background:#f5f5fa;border:1px solid #e0e0ee;border-radius:20px;padding:3px 12px;display:inline-block;font-size:12px;">
+              <field name="cgo_nn_week" style="max-width:160px;" class="small"/>
+            </div>
+          </div>
+          <div class="row g-3">
+
+            <!-- Col 1: Company-wide -->
+            <div class="col-12 col-md-4">
+              <div class="card shadow-sm h-100" style="border-left: 4px solid #1A1A2E;">
+                <div class="card-header fw-bold" style="background:#f0f4ff;font-size:0.85rem;">Company Non-Negotiables</div>
+                <div class="card-body p-0">
+                  <div class="small text-muted px-3 pt-2 pb-1" style="font-size:0.75rem;">Applies to everyone — no exceptions</div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Every lead enters pipeline within <strong>2 hours</strong></span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Every brief has <strong>all fields complete</strong> before passing on</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Deal outcome posted within <strong>24hr</strong> of customer response</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Pipeline record updated <strong>same day</strong> as any customer interaction</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Monday pipeline score reviewed <strong>without fail</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Col 2: Growth Lead -->
+            <div class="col-12 col-md-4">
+              <div style="border-left: 4px solid #BA7517; border-radius: 6px; overflow:hidden;" class="shadow-sm h-100">
+                <div class="fw-bold px-3 py-2" style="background:#fff8e1;font-size:0.85rem;border-bottom:1px solid #ffe082;">
+                  Growth Lead
+                </div>
+                <div style="background:#fffdf5;">
+                  <div class="px-3 pt-2 pb-1 small fw-semibold" style="color:#BA7517;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Personal Commitment — tick weekly</div>
+                  <div class="px-3 py-2 border-bottom">
+                    <field name="cgo_nn1_text" class="small w-100" style="border:none;background:transparent;"/>
+                  </div>
+                  <div class="px-3 py-2 border-bottom">
+                    <field name="cgo_nn2_text" class="small w-100" style="border:none;background:transparent;"/>
+                  </div>
+                  <div class="px-3 py-2 border-bottom">
+                    <field name="cgo_nn3_text" class="small w-100" style="border:none;background:transparent;"/>
+                  </div>
+                </div>
+                <div style="background:#fafafa;">
+                  <div class="px-3 pt-2 pb-1 small fw-semibold" style="color:#555;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Company Standards</div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Every lead enters pipeline within 2 hours</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Every brief fully complete before passing to Delivery Lead</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Deal outcome posted within 24hr of customer response</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Col 3: Delivery Lead -->
+            <div class="col-12 col-md-4">
+              <div style="border-left: 4px solid #0F6E56; border-radius: 6px; overflow:hidden;" class="shadow-sm h-100">
+                <div class="fw-bold px-3 py-2" style="background:#f0faf6;font-size:0.85rem;border-bottom:1px solid #a3d9c0;">
+                  Delivery Lead
+                </div>
+                <div style="background:#f7fefc;">
+                  <div class="px-3 pt-2 pb-1 small fw-semibold" style="color:#0F6E56;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Personal Commitment — tick weekly</div>
+                  <div class="px-3 py-2 border-bottom">
+                    <field name="cso_nn1_text" class="small w-100" style="border:none;background:transparent;"/>
+                  </div>
+                  <div class="px-3 py-2 border-bottom">
+                    <field name="cso_nn2_text" class="small w-100" style="border:none;background:transparent;"/>
+                  </div>
+                  <div class="px-3 py-2 border-bottom">
+                    <field name="cso_nn3_text" class="small w-100" style="border:none;background:transparent;"/>
+                  </div>
+                </div>
+                <div style="background:#fafafa;">
+                  <div class="px-3 pt-2 pb-1 small fw-semibold" style="color:#555;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Company Standards</div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Respond to every brief within 24 hours — no exceptions</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Always provide exactly 2 options with supplier details</span>
+                  </div>
+                  <div class="d-flex align-items-start gap-2 px-3 py-2 small">
+                    <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
+                    <span>Never miss a committed ETA without prior update</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+
+
+          <!-- ── Pipeline Simulator ── -->
+          <div style="border-top:3px solid #1A1A2E;margin:20px 0 16px;position:relative;">
+            <div style="position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:#fff;padding:0 12px;">
+              <span style="font-weight:700;font-size:0.8rem;letter-spacing:0.1em;color:#1A1A2E;text-transform:uppercase;">PIPELINE SIMULATOR</span>
+            </div>
+          </div>
+          <div class="card shadow-sm mb-3" style="background:#f8f9fa;border:1px solid #dee2e6;">
+            <div class="card-body p-3">
+              <p class="small text-muted mb-3">Adjust targets to simulate scenarios. These do not affect KPI calculations above.</p>
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-4">
+                  <div class="o_form_label small fw-bold text-muted text-uppercase mb-1">Leads target / month</div>
+                  <field name="sim_leads_target" class="form-control form-control-sm"/>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="o_form_label small fw-bold text-muted text-uppercase mb-1">Delivery Lead response target %</div>
+                  <field name="sim_response_target" class="form-control form-control-sm"/>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="o_form_label small fw-bold text-muted text-uppercase mb-1">Conversion target %</div>
+                  <field name="sim_conversion_target" class="form-control form-control-sm"/>
+                </div>
+              </div>
+              <div class="d-flex gap-3 flex-wrap">
+                <div class="p-2 rounded" style="background:#fff;border:1px solid #dee2e6;min-width:180px;">
+                  <div class="small text-muted mb-1">Leads vs Target</div>
+                  <div invisible="leads_this_month &gt;= sim_leads_target">
+                    <span class="fw-bold" style="color:#ffc107;">Gap: <field name="leads_this_month" readonly="1"/> of <field name="sim_leads_target" readonly="1"/></span>
+                  </div>
+                  <div invisible="leads_this_month &lt; sim_leads_target">
+                    <span class="fw-bold text-success">&#10003; Target met</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded" style="background:#fff;border:1px solid #dee2e6;min-width:200px;">
+                  <div class="small text-muted mb-1">Response Rate vs Target</div>
+                  <div invisible="cso_response_pct &gt;= sim_response_target">
+                    <span class="fw-bold" style="color:#ffc107;">Gap: <field name="cso_response_pct" readonly="1" digits="[5,1]"/>% of <field name="sim_response_target" readonly="1"/>%</span>
+                  </div>
+                  <div invisible="cso_response_pct &lt; sim_response_target">
+                    <span class="fw-bold text-success">&#10003; Target met</span>
+                  </div>
+                </div>
+                <div class="p-2 rounded" style="background:#fff;border:1px solid #dee2e6;min-width:200px;">
+                  <div class="small text-muted mb-1">Conversion vs Target</div>
+                  <div invisible="conversion_rate_pct &gt;= sim_conversion_target">
+                    <span class="fw-bold" style="color:#ffc107;">Gap: <field name="conversion_rate_pct" readonly="1" digits="[5,1]"/>% of <field name="sim_conversion_target" readonly="1"/>%</span>
+                  </div>
+                  <div invisible="conversion_rate_pct &lt; sim_conversion_target">
+                    <span class="fw-bold text-success">&#10003; Target met</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- Action: server action calls singleton method -->
+  <record id="action_success_pipeline_dashboard_server" model="ir.actions.server">
+    <field name="name">Success Pipeline Dashboard</field>
+    <field name="model_id" ref="model_success_pipeline_stats"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="state">code</field>
+    <field name="code">action = model.open_singleton_dashboard()</field>
+  </record>
+
+  <!-- Root menu (defined here so action_success_pipeline_dashboard_server exists first) -->
+  <menuitem id="menu_success_root"
+            name="Success Pipeline"
+            sequence="2"
+            action="action_success_pipeline_dashboard_server"
+            web_icon="success_pipeline,static/src/img/icon.png"/>
+
+  <menuitem id="menu_success_dashboard"
+            name="Dashboard"
+            parent="menu_success_root"
+            action="action_success_pipeline_dashboard_server"
+            sequence="4"/>
+
+</odoo>

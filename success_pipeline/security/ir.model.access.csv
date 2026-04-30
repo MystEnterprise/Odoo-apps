@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_success_lead_user,success.lead user,model_success_lead,,1,1,1,1
+access_success_pipeline_stats_user,success.pipeline.stats user,model_success_pipeline_stats,,1,1,1,1

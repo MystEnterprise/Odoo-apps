@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//opt/odoo-stage/**)",
+      "Bash(docker compose *)",
+      "Bash(sudo cp *)",
+      "Bash(sudo find *)",
+      "Bash(sudo docker *)",
+      "Bash(docker exec odoo-prod-app *)",
+      "Bash(sudo chown *)",
+      "Bash(echo \"Exit: $?\")",
+      "Read(//tmp/**)"
+    ]
+  }
+}

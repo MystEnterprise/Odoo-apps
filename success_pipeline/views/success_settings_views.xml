@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+  <record id='success_pipeline_settings_view' model='ir.ui.view'>
+    <field name='name'>success.pipeline.settings</field>
+    <field name='model'>res.config.settings</field>
+    <field name='inherit_id' ref='base.res_config_settings_view_form'/>
+    <field name='arch' type='xml'>
+      <xpath expr='//form' position='inside'>
+        <app data-string='Success Pipeline' string='Success Pipeline' name='success_pipeline'>
+          <block title='Email Notifications'>
+            <setting string='Growth Lead Email' help='Default email for growth lead notifications'>
+              <field name='success_growth_email' placeholder='growth@yourcompany.com'/>
+            </setting>
+            <setting string='Delivery Lead Email' help='Default email for delivery lead notifications'>
+              <field name='success_delivery_email' placeholder='delivery@yourcompany.com'/>
+            </setting>
+          </block>
+        </app>
+      </xpath>
+    </field>
+  </record>
+</odoo>
