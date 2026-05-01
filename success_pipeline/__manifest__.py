@@ -22,7 +22,7 @@ Key Features
     'price': 149.00,
     'currency': 'USD',
     'license': 'OPL-1',
-    'depends': ['base', 'mail', 'board'],
+    'depends': ['base', 'mail', 'board', 'base_setup'],
     'data': [
         'security/ir.model.access.csv',
         'views/success_settings_views.xml',
