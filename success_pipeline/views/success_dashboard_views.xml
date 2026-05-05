@@ -74,8 +74,8 @@
 
           <!-- ── Scoreboard ── -->
           <div class="o_horizontal_separator mt-2 mb-2 fw-bold text-uppercase">Scoreboard</div>
-<div class='row g-2 mb-2'>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+<div class='row g-2 mb-2 align-items-stretch'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Leads This Month</div>
     <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='leads_this_month' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>Target: 10+</div>
@@ -83,24 +83,24 @@
     <span class='badge bg-warning text-dark' invisible='leads_status != "near_miss"'>Near Miss</span>
     <span class='badge bg-success' invisible='leads_status != "on_track"'>On Track</span>
   </div></div>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Briefs Sent</div>
     <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='briefs_sent' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>Active in stage</div>
   </div></div>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;border-left:4px solid #0F6E56;'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;border-left:4px solid #0F6E56;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#0F6E56;'>Deals Closed</div>
     <div style='font-size:3rem;font-weight:800;margin:6px 0;color:#0F6E56;'><field name='deals_closed' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>Total won</div>
   </div></div>
 </div>
-<div class='row g-2 mb-2'>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+<div class='row g-2 mb-2 align-items-stretch'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Sourcing In Progress</div>
     <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='sourcing_count' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>Active in stage</div>
   </div></div>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Active Leads</div>
     <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='active_leads' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>Target: 10+</div>
@@ -108,30 +108,27 @@
     <span class='badge bg-warning text-dark' invisible='active_leads_status != "near_miss"'>Near Miss</span>
     <span class='badge bg-success' invisible='active_leads_status != "on_track"'>On Track</span>
   </div></div>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;border-left:4px solid #534AB7;'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;border-left:4px solid #534AB7;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#534AB7;'>Game Changers Launched</div>
     <div style='font-size:3rem;font-weight:800;margin:6px 0;color:#534AB7;'><field name='launched_game_changers' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>In market or established</div>
   </div></div>
 </div>
-<div class='row g-2 mb-4'>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+<div class='row g-2 mb-4 align-items-stretch'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Avg Days to Close</div>
     <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='avg_days_to_close' readonly='1' digits='[5,1]'/><span style='font-size:0.9rem;color:#888;'> days</span></div>
     <div style='font-size:0.75rem;color:#888;'>Closed won only</div>
   </div></div>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#888;'>Active Game-Changers</div>
     <div style='font-size:2rem;font-weight:700;margin:6px 0;'><field name='active_game_changers' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>In progress</div>
   </div></div>
-  <div class='col-md-4 d-flex'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;width:100%;border-left:4px solid #dc3545;'>
+  <div class='col-md-4'><div style='background:#fff;border:1px solid #e0e0e8;border-radius:10px;padding:16px;min-height:160px;border-left:4px solid #dc3545;'>
     <div style='font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#dc3545;'>Stalled 7D+</div>
     <div style='font-size:3rem;font-weight:800;margin:6px 0;color:#dc3545;'><field name='stalled_leads' readonly='1'/></div>
     <div style='font-size:0.75rem;color:#888;'>Target: 0</div>
-    <span class='badge bg-danger' invisible='stalled_status != "off_track"'>Off Track</span>
-    <span class='badge bg-warning text-dark' invisible='stalled_status != "near_miss"'>Near Miss</span>
-    <span class='badge bg-success' invisible='stalled_status != "on_track"'>On Track</span>
   </div></div>
 </div>
 
@@ -375,7 +372,7 @@
                   <div class="small text-muted px-3 pt-2 pb-1" style="font-size:0.75rem;">Applies to everyone — no exceptions</div>
                   <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
                     <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
-                    <span>Every lead enters pipeline within <strong>2 hours</strong></span>
+                    <span>Every NZ lead enters pipeline within <strong>2 hours</strong></span>
                   </div>
                   <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
                     <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
@@ -419,7 +416,7 @@
                   <div class="px-3 pt-2 pb-1 small fw-semibold" style="color:#555;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Company Standards</div>
                   <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
                     <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>
-                    <span>Every lead enters pipeline within 2 hours</span>
+                    <span>Every NZ lead enters pipeline within 2 hours</span>
                   </div>
                   <div class="d-flex align-items-start gap-2 px-3 py-2 border-bottom small">
                     <span style="color:#0F6E56;font-weight:700;min-width:14px;">&#10003;</span>

@@ -127,11 +127,11 @@
     <field name="name">success.lead.form</field>
     <field name="model">success.lead</field>
     <field name="arch" type="xml">
-      <form string="Success Lead">
+      <form string="Myst Lead">
         <header>
           <button name="action_send_brief" string="Send Brief to Delivery Lead" type="object"
                   class="btn-primary"
-                  invisible="record_type == 'innovation' or brief_sent_flag or stage not in ['lead_in','cso_confirmed']"/>
+                  invisible="record_type == 'innovation' or brief_sent_flag or stage != 'lead_in'"/>
           <button name="action_reset_brief" string="Reset Brief" type="object"
                   invisible="not brief_sent_flag"/>
           <button name="action_confirm_brief" string="Confirm Brief ✓" type="object"
@@ -140,7 +140,7 @@
           <button name="action_reset_confirmation" string="Reset Confirmation" type="object"
                   invisible="not brief_confirmed_flag"/>
           <button name="action_start_sourcing" string="Start Sourcing" type="object"
-                  class="btn-primary" invisible="stage not in ['delivery_lead_confirmed','cso_confirmed']"/>
+                  class="btn-primary" invisible="stage != 'delivery_lead_confirmed' or record_type == 'innovation'"/>
           <button name="action_send_to_md" string="Send to 3P Approval" type="object"
                   class="btn-primary" invisible="record_type == 'innovation' or stage != 'sourcing'"/>
           <button name="action_close_won" string="Close — Won" type="object"
@@ -150,7 +150,7 @@
           <button name='action_advance_innovation' string='Next Stage' type='object' class='btn-primary' invisible='record_type != "innovation" or innovation_stage in ["established","killed"]'/>
           <button name='action_kill_innovation' string='Kill' type='object' class='btn-danger' invisible='record_type != "innovation" or innovation_stage in ["established","killed"]'/>
           <field name="stage" widget="statusbar"
-                 statusbar_visible="lead_in,delivery_lead_confirmed,cso_confirmed,sourcing,md_approval,closed_won"
+                 statusbar_visible="lead_in,delivery_lead_confirmed,sourcing,md_approval,closed_won"
                  invisible="record_type == 'innovation'"/>
           <field name="innovation_stage" widget="statusbar"
                  invisible="record_type != 'innovation'"/>
@@ -169,17 +169,13 @@
                style="background:#B22222;color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;font-weight:700;font-size:15px;text-align:center;letter-spacing:0.3px;">
             &#128293; Cooking now...
           </div>
-          <div invisible="record_type == 'innovation' or ball_with == 'growth' or stage in ['sourcing','md_approval','closed_won','closed_lost']"
+          <div invisible="record_type == 'innovation' or ball_with != 'delivery' or stage in ['sourcing','md_approval','closed_won','closed_lost']"
                style="background:#BA7517;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-weight:600;">
             &#128233; Ball with Delivery Lead
           </div>
-          <div invisible="record_type == 'innovation' or ball_with != 'growth' or brief_confirmed_flag or stage in ['sourcing','md_approval','closed_won','closed_lost']"
+          <div invisible="record_type == 'innovation' or ball_with != 'growth' or stage in ['sourcing','md_approval','closed_won','closed_lost']"
                style="background:#0F6E56;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-weight:600;">
             &#127919; Ball in Growth Lead's Court
-          </div>
-          <div invisible="record_type == 'innovation' or ball_with != 'growth' or not brief_confirmed_flag or stage in ['sourcing','md_approval','closed_won','closed_lost']"
-               style="background:#0F6E56;color:#fff;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-weight:600;">
-            &#9989; Ball is back with Growth Lead
           </div>
           <div class="oe_title">
             <div class="d-flex align-items-center gap-2">
@@ -405,12 +401,18 @@
             </group>
           </group>
 
-          <!-- ══ LEAD COMMENTS — always visible ══ -->
-          <group string="Lead Comments" invisible="record_type == 'innovation'">
-            <field name="note_lead_in" nolabel="1" colspan="2"
-                   placeholder="Add a comment..." style="min-height:90px;"/>
+          <!-- This outer group creates the side-by-side layout -->
+          <group invisible="record_type == 'innovation'">
+            <group string="LEAD COMMENTS">
+             <field name="note_lead_in" nolabel="1" colspan="2" placeholder="Add a comment..." style="min-height:120px;"/>
+            </group>
+
+            <group string="TECHNICAL SPECIFICATIONS">
+              <field name="note_specs" nolabel="1" colspan="2" placeholder="Add tech specs here..." style="min-height:120px;"/>
+            </group>
           </group>
-          <!-- ══ DELIVERY LEAD COMMENTS — appears after Send Brief ══ -->
+
+          <!-- ══ DELIVERY LEAD COMMENTS — remains below — appears after Send Brief ══ -->
           <group string="Delivery Lead Comments" invisible="not brief_sent_flag">
             <field name="note_delivery_confirmed" nolabel="1" colspan="2"
                    placeholder="Add a comment..." style="min-height:90px;"/>
@@ -446,37 +448,18 @@
         <field name="partner_id"/>
         <field name="user_id"/>
         <field name="cso_id"/>
-        <filter name="my_leads" string="My Leads" domain="[('user_id','=',uid)]"/>
-        <filter name="lead_in" string="Lead In" domain="[('stage','=','lead_in')]"/>
-        <filter name="cso_confirmed" string="Source Lead Confirmed" domain="[('stage','=','cso_confirmed')]"/>
-        <filter name="sourcing" string="Sourcing" domain="[('stage','=','sourcing')]"/>
-        <filter name="md_approval" string="3P Approval" domain="[('stage','=','md_approval')]"/>
-        <filter name="closed_won" string="Won" domain="[('stage','=','closed_won')]"/>
-        <filter name="closed_lost" string="Lost" domain="[('stage','=','closed_lost')]"/>
-        <separator/>
-        <filter name="this_month" string="This Month" domain="[('date_created','&gt;=', (context_today()).strftime('%Y-%m-01'))]"/>
-        <filter name="this_year" string="This Year" domain="[('date_created','&gt;=', context_today().strftime('%Y-01-01'))]"/>
-        <separator/>
-        <filter name="stalled" string="Stalled 7d+" domain="[('stage','not in',['closed_won','closed_lost']),('stage_date','!=',False)]"/>
-        <filter name="high_priority" string="High Priority" domain="[('priority','=','2')]"/>
-        <separator/>
-        <filter name='leads_only' string='Leads' domain="[('record_type','=','inquiry')]"/>
-        <filter name='game_changers' string='Game-Changers' domain="[('record_type','=','innovation')]"/>
-        <filter name='has_product' string='Has Linked Product' domain="[('product_id','!=',False)]"/>
-        <filter name='go_decisions' string='Go Decisions' domain="[('go_no_go','=','yes')]"/>
-        <filter name='killed' string='Killed' domain="[('innovation_stage','=','killed')]"/>
-        <filter name='launched' string='Launched' domain="[('innovation_stage','in',['launch','validation','established'])]"/>
+        <filter name="leads_only" string="Leads" domain="[('record_type','=','inquiry')]"/>
+        <filter name="this_month" string="This Month" domain="[('date_created','&gt;=',(context_today()).strftime('%Y-%m-01'))]"/>
+        <filter name="closed" string="Closed" domain="[('stage','in',['closed_won','closed_lost'])]"/>
+        <filter name="stalled" string="Stalled" domain="[('stage','not in',['closed_won','closed_lost']),('stage_date','!=',False),('stage_date','&lt;=',(context_today()-datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+        <filter name="has_supplier" string="Has Supplier" domain="[('supplier_a_id','!=',False)]"/>
+        <filter name="briefs_sent" string="Briefs Sent" domain="[('brief_sent_flag','=',True)]"/>
         <group>
           <filter name="group_stage" string="Stage" context="{'group_by':'stage'}"/>
           <filter name="group_category" string="Category" context="{'group_by':'product_category'}"/>
           <filter name="group_source" string="Lead Source" context="{'group_by':'lead_source'}"/>
           <filter name="group_type" string="Product Type" context="{'group_by':'product_type'}"/>
-          <filter name="group_month" string="Month" context="{'group_by':'date_created:month'}"/>
-          <filter name='group_record_type' string='Type' context="{'group_by':'record_type'}"/>
-          <filter name='group_innovation_stage' string='Innovation Stage' context="{'group_by':'innovation_stage'}"/>
-          <filter name='group_product' string='Product' context="{'group_by':'product_id'}"/>
-          <filter name='group_launch_market' string='Launch Market' context="{'group_by':'launch_market'}"/>
-          <filter name='group_supplier_a' string='Primary Supplier' context="{'group_by':'supplier_a_id'}"/>
+          <filter name="group_supplier_a" string="Supplier" context="{'group_by':'supplier_a_id'}"/>
         </group>
       </search>
     </field>
@@ -491,7 +474,7 @@
     <field name="context">{"group_by": "record_type"}</field>
     <field name="help" type="html">
       <p class="o_view_nocontent_smiling_face">
-        No leads yet — add your first opportunity!
+        No leads yet — add your first NZ opportunity!
       </p>
     </field>
   </record>
@@ -501,8 +484,32 @@
     <field name="res_model">success.lead</field>
     <field name="view_mode">kanban,list,form</field>
     <field name="domain">[("record_type","=","inquiry")]</field>
-    <field name="context">{"default_record_type":"inquiry","search_default_leads_only":1}</field>
-    <field name="view_id" ref="success_lead_view_kanban"/>
+    <field name="context">{"default_record_type":"inquiry","search_default_leads_only":1,"group_by":"stage"}</field>
+    <field name="search_view_id" ref="success_lead_view_search"/>
+    </record>
+
+  <!-- ── Game Changer Search View ── -->
+  <record id="success_gc_search_view" model="ir.ui.view">
+    <field name="name">success.lead.gc.search</field>
+    <field name="model">success.lead</field>
+    <field name="arch" type="xml">
+      <search string="Search Game Changers">
+        <field name="name"/>
+        <filter name="active_gc" string="Active" domain="[('innovation_stage','not in',['killed'])]"/>
+        <filter name="launched_gc" string="Launched" domain="[('innovation_stage','in',['launch','validation','established'])]"/>
+        <filter name="killed_gc" string="Killed" domain="[('innovation_stage','=','killed')]"/>
+        <filter name="go_decision" string="Go Decision" domain="[('go_no_go','=','yes')]"/>
+        <filter name="has_product" string="Has Product" domain="[('product_id','!=',False)]"/>
+        <filter name="sourcing_gc" string="Sourcing" domain="[('innovation_stage','=','sourcing')]"/>
+        <group>
+          <filter name="group_innovation_stage" string="Innovation Stage" context="{'group_by':'innovation_stage'}"/>
+          <filter name="group_launch_market" string="Launch Market" context="{'group_by':'launch_market'}"/>
+          <filter name="group_feasibility" string="Technical Feasibility" context="{'group_by':'technical_feasibility'}"/>
+          <filter name="group_mvp_deadline" string="MVP Deadline" context="{'group_by':'mvp_deadline'}"/>
+          <filter name="group_sourcing_eta" string="Sourcing ETA" context="{'group_by':'sourcing_eta'}"/>
+        </group>
+      </search>
+    </field>
   </record>
 
   <record id="action_success_game_changers" model="ir.actions.act_window">
@@ -511,11 +518,12 @@
     <field name="view_mode">kanban,list,form</field>
     <field name="domain">[("record_type","=","innovation")]</field>
     <field name="context">{"default_record_type":"innovation","search_default_game_changers":1}</field>
+    <field name="search_view_id" ref="success_gc_search_view"/>
     <field name="view_ids" eval="[(5,0,0),(0,0,{&quot;view_mode&quot;:&quot;kanban&quot;,&quot;view_id&quot;:ref(&quot;success_gc_view_kanban&quot;)}),(0,0,{&quot;view_mode&quot;:&quot;list&quot;}),(0,0,{&quot;view_mode&quot;:&quot;form&quot;})]" />
   </record>
 
   <menuitem id="menu_success_pipeline"
-            name="Pipeline"
+            name="Overview"
             parent="menu_success_root"
             action="action_success_lead"
             sequence="1"/>

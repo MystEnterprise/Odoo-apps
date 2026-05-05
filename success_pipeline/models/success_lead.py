@@ -6,7 +6,6 @@ import calendar as cal
 STAGE_SELECTION = [
     ('lead_in', 'Lead In'),
     ('delivery_lead_confirmed', 'Delivery Lead Confirmed'),
-    ('cso_confirmed', 'Source Lead Confirmed'),
     ('sourcing', 'Sourcing'),
     ('md_approval', '3P Approval'),
     ('closed_won', 'Closed Won'),
@@ -102,7 +101,7 @@ class SuccessLead(models.Model):
     supplier_confirmed_innovation = fields.Boolean(string='Supplier Confirmed', tracking=True)
     marketing_channels = fields.Char(string='Marketing Channels', tracking=True)
     launch_date = fields.Date(string='Launch Date', tracking=True)
-    launch_market = fields.Selection([('local','Local Market'),('au','Australia'),('pacific','Pacific'),('global','Global')], string='Launch Market', tracking=True)
+    launch_market = fields.Selection([('nz','New Zealand'),('au','Australia'),('pacific','Pacific'),('global','Global')], string='Launch Market', tracking=True)
     launch_marketing_channel = fields.Char(string='Launch Marketing Channel', tracking=True)
     launch_budget = fields.Monetary(string='Launch Budget', currency_field='currency_id', tracking=True)
     units_sold = fields.Float(string='Units Sold', tracking=True)
@@ -119,7 +118,7 @@ class SuccessLead(models.Model):
     new_product_description = fields.Text(string='Product Description', tracking=True)
     ideation_notes = fields.Text(string='Ideation Notes', tracking=True)
     feasibility_notes = fields.Text(string='Feasibility Notes', tracking=True)
-    sourcing_notes_inno = fields.Text(string='Innovation Sourcing Notes', tracking=True)
+    sourcing_notes_inno = fields.Text(string='Sourcing Notes', tracking=True)
     prototype_notes = fields.Text(string='Prototype Notes', tracking=True)
     scale_notes = fields.Text(string='Scale Notes', tracking=True)
     launch_notes = fields.Text(string='Launch Notes', tracking=True)
@@ -140,7 +139,7 @@ class SuccessLead(models.Model):
         default=lambda self: self.env.company, required=True,
     )
     stage_date = fields.Date(string='Stage Since', readonly=True, copy=False)
-    date_cso_confirmed = fields.Date(string='Source Lead Confirmed Date', readonly=True, copy=False)
+    date_cso_confirmed = fields.Date(string='Brief Confirmed Date', readonly=True, copy=False)
     has_two_options = fields.Boolean(string='2 Sourcing Options Provided', tracking=True)
     sourcing_on_time = fields.Boolean(string='Sourcing Delivered On Time', tracking=True)
     sourcing_options = fields.Text(string='Sourcing Options', tracking=True)
@@ -197,12 +196,10 @@ class SuccessLead(models.Model):
     ], string='Ball With', default='growth', tracking=True)
 
     notification_email_growth = fields.Char(
-        string='Growth Lead Email',
-        default=lambda self: self.env['ir.config_parameter'].sudo().get_param('success_pipeline.growth_email', ''),
+        string='Growth Lead Email', default='syed@mystenterprise.com',
     )
     notification_email_delivery = fields.Char(
-        string='Delivery Lead Email',
-        default=lambda self: self.env['ir.config_parameter'].sudo().get_param('success_pipeline.delivery_email', ''),
+        string='Delivery Lead Email', default='kazmi@mystenterprise.com',
     )
     brief_sent_flag = fields.Boolean(
         string='Brief Sent', column_name='brief_sent', default=False, tracking=True,
@@ -212,7 +209,8 @@ class SuccessLead(models.Model):
     )
     note_lead_in = fields.Text(string='Lead Comments', tracking=True)
     note_delivery_confirmed = fields.Text(string='Delivery Lead Comments', tracking=True)
-    note_sourcing = fields.Text(string='Innovation Sourcing Notes', tracking=True)
+    note_sourcing = fields.Text(string='Sourcing Notes', tracking=True)
+    note_specs = fields.Text(string='Technical Specifications', tracking=True)
 
     @api.model
     def _group_expand_stages(self, stages, domain, order=None):
@@ -244,7 +242,7 @@ class SuccessLead(models.Model):
             stage = vals['stage']
             today = fields.Date.today()
             lk = self.with_context(_success_lock=True)
-            if stage == 'cso_confirmed':
+            if stage == 'delivery_lead_confirmed':
                 lk.filtered(lambda r: not r.date_cso_confirmed).write(
                     {'date_cso_confirmed': today}
                 )
@@ -272,16 +270,9 @@ class SuccessLead(models.Model):
             self.env['mail.mail'].create({
                 'subject': f'New Lead Brief — {rec.name}',
                 'email_to': rec.notification_email_delivery,
-                'body_html': (
-                    f'<p>New brief from Growth Lead:</p>'
-                    f'<p><b>Customer:</b> {rec.partner_id.name}<br/>'
-                    f'<b>Need:</b> {rec.what_they_need or "—"}<br/>'
-                    f'<b>Qty:</b> {rec.qty or "—"}<br/>'
-                    f'<b>Budget:</b> {rec.budget or "—"}<br/>'
-                    f'<b>Deadline:</b> {rec.cso_deadline or "—"}</p>'
-                ),
+                'body_html': f'<p>New brief from Growth Lead:</p><p><b>Customer:</b> {rec.partner_id.name}<br/><b>Need:</b> {rec.what_they_need}<br/><b>Qty:</b> {rec.qty}<br/><b>Budget:</b> {rec.budget}<br/><b>Deadline:</b> {rec.cso_deadline}<br/><b>Tech Specs:</b> {rec.note_specs or "Not provided"}</p><p><a href="https://www.mystenterprise.com/odoo/myst-pipeline/{rec.id}">Open this lead in Odoo</a></p>',
             }).send()
-            rec.message_post(body='Brief sent to Delivery Lead by email.')
+            rec.message_post(body='Brief sent to Delivery Lead. Waiting for confirmation.')
 
     def action_reset_brief(self):
         for rec in self:
@@ -291,7 +282,7 @@ class SuccessLead(models.Model):
 
     def action_confirm_brief(self):
         for rec in self:
-            rec.ball_with = 'growth'
+            rec.ball_with = 'delivery'
             rec.brief_confirmed_flag = True
             rec.stage = 'delivery_lead_confirmed'
             self.env['mail.mail'].create({
@@ -300,10 +291,12 @@ class SuccessLead(models.Model):
                 'body_html': (
                     f'<p>Brief confirmed by Delivery Lead.</p>'
                     f'<p><b>Deal:</b> {rec.name}<br/>'
-                    f'<b>Customer:</b> {rec.partner_id.name}</p>'
+                    f'<b>Customer:</b> {rec.partner_id.name}<br/>'
+                    f'<b>Delivery Lead is now sourcing.</b></p>'
+                    f'<p><a href="https://www.mystenterprise.com/odoo/myst-pipeline/{rec.id}">Open this lead in Odoo</a></p>'
                 ),
             }).send()
-            rec.message_post(body='Brief confirmed. Stage moved to Delivery Lead Confirmed. Ball back with Growth Lead.')
+            rec.message_post(body='Brief confirmed. Delivery Lead now sourcing.')
 
     def action_reset_confirmation(self):
         for rec in self:
@@ -312,7 +305,7 @@ class SuccessLead(models.Model):
             rec.message_post(body='Confirmation reset by Delivery Lead.')
 
     def action_confirm_and_send(self):
-        self.stage = 'cso_confirmed'
+        pass
 
     def action_start_sourcing(self):
         self.stage = 'sourcing'
@@ -569,15 +562,8 @@ class SuccessPipelineStats(models.Model):
             rec.stalled_leads = len(stalled)
             rec.stalled_status = self._s(len(stalled), 0, higher=False)
 
-            def _brief_fields_filled(r):
-                return sum([
-                    bool(r.what_they_need),
-                    bool(r.budget),
-                    bool(r.timeline),
-                    bool(r.cso_deadline),
-                ])
-            total_filled = sum(_brief_fields_filled(r) for r in all_leads)
-            rec.brief_quality_pct = total_filled / (total * 4) * 100 if total else 0.0
+            brief_complete = [r for r in all_leads if r.what_they_need and r.budget and r.cso_deadline and r.note_specs]
+            rec.brief_quality_pct = len(brief_complete) / total * 100 if total else 0.0
             rec.brief_quality_status = self._s(rec.brief_quality_pct, 80)
 
             closed_with_notes = closed_all.filtered(
@@ -656,6 +642,24 @@ class SuccessPipelineStats(models.Model):
             'domain': [('date_created', '>=', str(today.replace(day=1)))],
         }
 
+    def action_view_briefs_sent(self):
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('stage', '=', 'delivery_lead_confirmed'), ('record_type', '=', 'inquiry')], 'name': 'Briefs Sent'}
+
+    def action_view_deals_closed(self):
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('stage', '=', 'closed_won'), ('record_type', '=', 'inquiry')], 'name': 'Deals Closed'}
+
+    def action_view_active_leads(self):
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('stage', 'not in', ['closed_won', 'closed_lost']), ('record_type', '=', 'inquiry')], 'name': 'Active Leads'}
+
+    def action_view_launched_gc(self):
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('innovation_stage', 'in', ['launch', 'validation', 'established']), ('record_type', '=', 'innovation')], 'name': 'Game Changers Launched'}
+
+    def action_view_active_gc(self):
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('innovation_stage', 'not in', ['launch', 'validation', 'established', 'killed']), ('record_type', '=', 'innovation')], 'name': 'Active Game-Changers'}
+
+    def action_view_avg_days(self):
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'list,form', 'domain': [('stage', '=', 'closed_won'), ('record_type', '=', 'inquiry')], 'name': 'Avg Days to Close'}
+
     def action_view_briefs(self):
         return {
             'type': 'ir.actions.act_window', 'name': 'Briefs Sent',
@@ -664,11 +668,7 @@ class SuccessPipelineStats(models.Model):
         }
 
     def action_view_sourcing(self):
-        return {
-            'type': 'ir.actions.act_window', 'name': 'Sourcing Active',
-            'res_model': 'success.lead', 'view_mode': 'kanban,list,form',
-            'domain': [('stage', '=', 'sourcing')],
-        }
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('stage', '=', 'sourcing'), ('record_type', '=', 'inquiry')], 'name': 'Sourcing In Progress'}
 
     def action_view_closed(self):
         return {
@@ -686,14 +686,7 @@ class SuccessPipelineStats(models.Model):
 
     def action_view_stalled(self):
         cutoff = fields.Date.today() - timedelta(days=7)
-        return {
-            'type': 'ir.actions.act_window', 'name': 'Stalled Leads',
-            'res_model': 'success.lead', 'view_mode': 'list,kanban,form',
-            'domain': [
-                ('stage', 'not in', ['closed_won', 'closed_lost']),
-                ('stage_date', '<=', str(cutoff)),
-            ],
-        }
+        return {'type': 'ir.actions.act_window', 'res_model': 'success.lead', 'view_mode': 'kanban,list,form', 'domain': [('stage', 'not in', ['closed_won', 'closed_lost']), ('record_type', '=', 'inquiry'), ('stage_date', '<=', str(cutoff))], 'name': 'Stalled 7D+'}
 
     def action_view_avg_close(self):
         return {
