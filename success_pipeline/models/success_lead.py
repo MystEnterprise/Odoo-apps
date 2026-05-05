@@ -196,10 +196,10 @@ class SuccessLead(models.Model):
     ], string='Ball With', default='growth', tracking=True)
 
     notification_email_growth = fields.Char(
-        string='Growth Lead Email', default='syed@mystenterprise.com',
+        string='Growth Lead Email', default=lambda self: self.env['ir.config_parameter'].sudo().get_param('success_pipeline.growth_email',''),
     )
     notification_email_delivery = fields.Char(
-        string='Delivery Lead Email', default='kazmi@mystenterprise.com',
+        string='Delivery Lead Email', default=lambda self: self.env['ir.config_parameter'].sudo().get_param('success_pipeline.delivery_email',''),
     )
     brief_sent_flag = fields.Boolean(
         string='Brief Sent', column_name='brief_sent', default=False, tracking=True,
@@ -270,7 +270,7 @@ class SuccessLead(models.Model):
             self.env['mail.mail'].create({
                 'subject': f'New Lead Brief — {rec.name}',
                 'email_to': rec.notification_email_delivery,
-                'body_html': f'<p>New brief from Growth Lead:</p><p><b>Customer:</b> {rec.partner_id.name}<br/><b>Need:</b> {rec.what_they_need}<br/><b>Qty:</b> {rec.qty}<br/><b>Budget:</b> {rec.budget}<br/><b>Deadline:</b> {rec.cso_deadline}<br/><b>Tech Specs:</b> {rec.note_specs or "Not provided"}</p><p><a href="https://www.mystenterprise.com/odoo/myst-pipeline/{rec.id}">Open this lead in Odoo</a></p>',
+                'body_html': f'<p>New brief from Growth Lead:</p><p><b>Customer:</b> {rec.partner_id.name}<br/><b>Need:</b> {rec.what_they_need}<br/><b>Qty:</b> {rec.qty}<br/><b>Budget:</b> {rec.budget}<br/><b>Deadline:</b> {rec.cso_deadline}<br/><b>Tech Specs:</b> {rec.note_specs or "Not provided"}</p><p><a href="/odoo/leads/{rec.id}">Open this lead in Odoo</a></p>',
             }).send()
             rec.message_post(body='Brief sent to Delivery Lead. Waiting for confirmation.')
 
@@ -293,7 +293,7 @@ class SuccessLead(models.Model):
                     f'<p><b>Deal:</b> {rec.name}<br/>'
                     f'<b>Customer:</b> {rec.partner_id.name}<br/>'
                     f'<b>Delivery Lead is now sourcing.</b></p>'
-                    f'<p><a href="https://www.mystenterprise.com/odoo/myst-pipeline/{rec.id}">Open this lead in Odoo</a></p>'
+                    f'<p><a href="/odoo/leads/{rec.id}">Open this lead in Odoo</a></p>'
                 ),
             }).send()
             rec.message_post(body='Brief confirmed. Delivery Lead now sourcing.')
